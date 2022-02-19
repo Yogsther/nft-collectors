@@ -16,7 +16,7 @@ var lobbies = []
 
 
 const NFTS = JSON.parse(fs.readFileSync("./nfts.json", "utf8"))
-
+const config = JSON.parse(fs.readFileSync("./config.json", "utf8"))
 
 io.on('connection', socket => {
 	clients[socket.id] = {}
@@ -97,8 +97,8 @@ io.on('connection', socket => {
 
 });
 
-server.listen(5995, () => {
-	console.log("Started server on port " + 80)
+server.listen(config.port, () => {
+	console.log("Started server on port " + config.port)
 });
 
 function getLobbyFromCode(code) {
