@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "express": "^4.17.3",
+    "file-system": "^2.2.2",
+    "http": "^0.0.1-security",
+    "socket.io": "^4.4.1"
+  }
+}
