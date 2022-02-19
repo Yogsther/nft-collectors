@@ -5,6 +5,7 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
 const fs = require("file-system");
+const { v4: uuidv4 } = require('uuid');
 
 app.use("/", express.static('dist'))
 app.get("/", (req, res) => {
@@ -16,12 +17,17 @@ var lobbies = []
 
 
 const NFTS = JSON.parse(fs.readFileSync("./nfts.json", "utf8"))
+
+for (let nft of NFTS) {
+	nft.id = uuidv4()
+}
+
+fs.writeFileSync("nfts.json", JSON.stringify(NFTS, null, 2))
+
 const config = JSON.parse(fs.readFileSync("./config.json", "utf8"))
 
 io.on('connection', socket => {
 	clients[socket.id] = {}
-
-	console.log("User connected " + socket.id)
 
 	socket.on("join_lobby", (args) => {
 		let lobby
@@ -145,6 +151,9 @@ function getNFT(id) {
 class Lobby {
 	constructor() {
 		this.code = this.generateCode()
+
+		console.log(`Created new lobby (${this.code})`)
+
 		this.players = []
 		this.inGame = false
 		this.round = 0
@@ -163,6 +172,7 @@ class Lobby {
 	}
 
 	startGame() {
+		console.log(`Starting game (${this.code})`)
 		this.inGame = true
 		this.pickingNfts = false;
 		this.picksPerRound = this.players.length < 3 ? 3 : this.players.length - 1
@@ -241,6 +251,7 @@ class Lobby {
 		this.round = 0
 		this.roundDatas = []
 		this.emit("end_game")
+		console.log(`Game ended (${this.code})`)
 	}
 
 	getPlayerFromName(name) {
@@ -262,7 +273,6 @@ class Lobby {
 	pick(player, nftID) {
 		if (this.pickingNfts) {
 			player.pick = nftID
-			console.log(player.name + " picked " + getNFT(nftID).name)
 		}
 		if (this.allPlayersReady()) {
 			clearTimeout(this.timeout)
@@ -286,6 +296,7 @@ class Lobby {
 			name: name,
 		})
 		this.update()
+		console.log(`${name} joined (${this.code})`)
 	}
 
 	removePlayer(socketID) {
@@ -308,7 +319,7 @@ class Lobby {
 			}
 		}
 		clearTimeout(this.timeout)
-		console.log("Deleted game")
+		console.log(`Lobby terminated (${this.code})`)
 	}
 
 	update() {
