@@ -97,7 +97,7 @@ io.on('connection', socket => {
 
 });
 
-server.listen(80, () => {
+server.listen(5995, () => {
 	console.log("Started server on port " + 80)
 });
 
