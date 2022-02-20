@@ -1,3 +1,4 @@
 {
-	"port": "2344"
+	"port": "2344",
+	"update_ids": false
 }

@@ -13,7 +13,11 @@ class NFT {
 
 	revealPrice() {
 		let price = this.card.getElementsByClassName("nft-display-price")[0]
-		price.innerHTML = this.price
+		let dollarPrice = String(Math.round(this.price * 2647))
+		// Insert a space for each 3 digits in dollarPrice
+		dollarPrice = dollarPrice.replace(/\B(?=(\d{3})+(?!\d))/g, " ")
+
+		price.innerHTML = `${this.price} <span style="color:gray;">($${dollarPrice})</span>`
 	}
 
 	setClaimable(claimable) {
@@ -34,7 +38,7 @@ class NFT {
 	}
 
 	onClaimerAnimationDone() {
-		console.log("Animation done")
+
 	}
 
 	remove() {

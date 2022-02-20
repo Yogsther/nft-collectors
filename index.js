@@ -18,13 +18,17 @@ var lobbies = []
 
 const NFTS = JSON.parse(fs.readFileSync("./nfts.json", "utf8"))
 
-for (let nft of NFTS) {
-	nft.id = uuidv4()
-}
-
-fs.writeFileSync("nfts.json", JSON.stringify(NFTS, null, 2))
 
 const config = JSON.parse(fs.readFileSync("./config.json", "utf8"))
+
+if (config.update_ids) {
+	for (let nft of NFTS) {
+		nft.id = uuidv4()
+	}
+
+	fs.writeFileSync("nfts.json", JSON.stringify(NFTS, null, 2))
+}
+
 
 io.on('connection', socket => {
 	clients[socket.id] = {}
@@ -206,7 +210,11 @@ class Lobby {
 			round.push(NFTS[index])
 		}
 
-		this.emit("play_round", round)
+		this.emit("play_round", {
+			nfts: round,
+			round: this.round,
+			rounds: this.rounds
+		})
 		this.timeout = setTimeout(() => {
 			this.endRound()
 		}, (this.roundTime * 1000))

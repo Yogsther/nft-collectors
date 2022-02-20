@@ -1,9 +1,15 @@
 
 var nftCards = []
 var countdown;
+var round = 0
+var totalRounds = 0
 
-socket.on("play_round", nfts => {
-	startRound(nfts)
+socket.on("play_round", data => {
+	round = data.round;
+	totalRounds = data.rounds
+
+	startRound(data.nfts)
+
 })
 
 socket.on("end_round", picks => {
@@ -84,7 +90,6 @@ var countdownBar = document.getElementById("countdown-animation")
 var countdownText = document.getElementById("countdown")
 
 function stopCountdown() {
-	console.log("Stopping countdown")
 	clearInterval(countdown)
 	countdownText.innerText = "Time's up!"
 	countdownBar.style.width = "0%"
@@ -94,13 +99,12 @@ function stopCountdown() {
 
 function startCountdown() {
 	let start = Date.now()
+	countdownText.innerText = `Pick an NFT (${round + 1}/${totalRounds})`
 	countdown = setInterval(() => {
 		let timeLeft = 10 - Math.floor((Date.now() - start)) / 1000
 		let timeLeftString = String(Math.round(timeLeft * 10) / 10)
 		if (timeLeftString.length == 1) timeLeftString = timeLeftString + ".0"
 
-
-		countdownText.innerText = `Pick an NFT (${timeLeftString})`
 		countdownBar.style.width = `${timeLeft / 10 * 100}%`
 
 		if (timeLeft <= 0) {
